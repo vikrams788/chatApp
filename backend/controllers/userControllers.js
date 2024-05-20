@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const cloudinary = require('cloudinary').v2;
 
 exports.login = async (req, res) => {
     try {
@@ -32,26 +33,32 @@ exports.login = async (req, res) => {
             expires: new Date(Date.now() + 10800000),
         });
 
-        res.status(200).json({ message: 'Login successful', token2, user });
+        return res.status(200).json({ message: 'Login successful', token2, user });
     } catch (error) {
         console.error('Error in login:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
 exports.signup = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, name } = req.body;
+        const userProfileFile = req.file;
 
         const existingUser = await User.findOne({email: email});
         
         if(existingUser) {
-            res.staus(400).json({message: "User already exists. Login, instead!"})
+            return res.status(400).json({message: "User already exists. Login, instead!"})
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({email: email, password: hashedPassword});
+        const newUser = new User({email: email, password: hashedPassword, name: name});
+
+        if (userProfileFile) {
+            const result = await cloudinary.uploader.upload(userProfileFile.path);
+            newUser.pic = result.secure_url;
+        }
 
         await newUser.save();
 
@@ -70,20 +77,43 @@ exports.signup = async (req, res) => {
             expires: new Date(Date.now() + 10800000)
         });
 
-        res.staus(200).json({message: 'User signed up and authenticated successfully', token2, newUser});
+        return res.status(200).json({message: 'User signed up and authenticated successfully', token2, newUser});
     } catch (error) {
         console.log('Error signing up: ', error);
-        res.status(500).json({message: "Internal server error"});
+        return res.status(500).json({message: "Internal server error"});
     }
-}
+};
+
+exports.searchUsers = async (req, res) => {
+    try {
+        const query = req.query.query;
+
+        if (!query) {
+            return res.status(400).json({ message: "Query parameter is required" });
+        }
+
+        const regex = new RegExp(query, 'i');
+        const users = await User.find({
+            $or: [
+                { name: { $regex: regex } },
+                { email: { $regex: regex } }
+            ]
+        });
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error searching users:', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 exports.logout = async (req, res) => {
     try {
         res.clearCookie('token');
     
-        res.status(200).json({ message: 'Logout successful' });
+        return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
         console.error('Error in logout:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
