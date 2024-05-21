@@ -2,7 +2,6 @@ import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, V
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { toast } from  'react-toastify'
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -41,15 +40,6 @@ const Login = () => {
           localStorage.setItem('user', JSON.stringify(user));
     
           navigate('/chats');
-    
-          toast.success('Logged in successfully', {
-            position: 'top-right',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-          });
 
           console.log(response.data)
     

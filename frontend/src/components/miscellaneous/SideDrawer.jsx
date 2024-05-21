@@ -4,7 +4,6 @@ import { FaSearch, FaRegBell, FaChevronDown } from "react-icons/fa";
 import { ChatState } from "../../Context/ChatProvider";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
 
@@ -45,15 +44,6 @@ const SideDrawer = () => {
                   'Content-Type': 'application/json',
                   'Access-Control-Allow-Credentials': true,
                 },
-            })
-
-            toast.success('Logged in successfully', {
-                position: 'top-right',
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
             });
 
             navigate('/');

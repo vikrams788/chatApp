@@ -2,7 +2,6 @@ import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, V
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { toast } from  'react-toastify'
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -57,15 +56,6 @@ const Signup = () => {
       localStorage.setItem('user', JSON.stringify(user));
 
       navigate('/chats');
-
-      toast.success('Logged in successfully', {
-        position: 'top-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-      });
 
     } catch (error) {
       console.error('Error in login:', error.response.data.message);
