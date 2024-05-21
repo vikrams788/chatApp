@@ -3,24 +3,22 @@ const Message = require('../models/Message');
 const User = require('../models/User');
 
 exports.sendMessage = async (req, res) => {
-    const { content, chatId, fullName, profilePicture } = req.body;
+    const { content, chatId } = req.body;
 
     var newMessage = {
         sender: req.user.userId,
         content: content,
         chat: chatId,
-        fullName: fullName,
-        profilePicture: profilePicture
     };
 
     try {
         let message = await Message.create(newMessage);
 
-        message = await message.populate('sender', 'fullName profilePicture');
+        message = await message.populate('sender', 'name pic');
         message = await message.populate('chat');
         message = await User.populate(message, {
             path: 'chat.users',
-            select: 'fullName, profilePicture, email'
+            select: 'name, pic, email'
         });
 
         await Chat.findByIdAndUpdate(req.body.chatId, {
@@ -37,7 +35,7 @@ exports.sendMessage = async (req, res) => {
 exports.allMessages = async (req, res) => {
     try {
         const messages = await Message.find({ chat: req.params.chatId })
-            .populate('sender', 'fullName profilePicture, email')
+            .populate('sender', 'name pic, email')
             .populate('chat');
 
         res.status(201).json(messages);

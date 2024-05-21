@@ -74,15 +74,8 @@ const SideDrawer = () => {
                 },
             });
 
-            console.log("Response data:", response.data); // Log response data
-            console.log("Current chats:", chats); // Log current chats
-
-            if (!Array.isArray(chats)) {
-                console.error("Chats is not an array:", chats);
-            } else {
-                if (!chats.find((c) => c._id === response.data._id)) {
-                    setChats([response.data, ...chats]);
-                }
+            if (!chats.find((c) => c._id === response.data._id)) {
+                setChats([response.data, ...chats]);
             }
 
             setSelectedChat(response.data);
@@ -129,12 +122,12 @@ const SideDrawer = () => {
         >
             Vikram&apos;s Chat App
         </Text>
-        <div>
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <Menu>
                 <MenuButton 
                 p='1'
                 >
-                    <FaRegBell size={24} style={{margin: '1'}} />
+                    <FaRegBell size={24} style={{margin: 1}}/>
                 </MenuButton>
             </Menu>
             <Menu>
