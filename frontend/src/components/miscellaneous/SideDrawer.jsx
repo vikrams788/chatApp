@@ -46,6 +46,8 @@ const SideDrawer = () => {
                 },
             });
 
+            localStorage.clear();
+
             navigate('/');
         } catch (error) {
             console.log("Error logging out", error)

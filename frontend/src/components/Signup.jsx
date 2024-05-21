@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Text, VStack } from '@chakra-ui/react'
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ const Signup = () => {
     pic: ''
   });
   const [show, setShow] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -34,8 +35,38 @@ const Signup = () => {
     setShow(!show);
   };
 
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength) {
+      return "Password must be at least 8 characters long.";
+    } else if (!hasUpperCase) {
+      return "Password must contain at least one uppercase letter.";
+    } else if (!hasLowerCase) {
+      return "Password must contain at least one lowercase letter.";
+    } else if (!hasNumbers) {
+      return "Password must contain at least one number.";
+    } else if (!hasSpecialChar) {
+      return "Password must contain at least one special character.";
+    }
+    return "";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const passwordValidationError = validatePassword(formData.password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      return;
+    }
+
+    setPasswordError('');
+
     try {
       const data = new FormData();
       data.append('name', formData.name);
@@ -106,6 +137,7 @@ const Signup = () => {
                 </Button>
             </InputRightElement>
         </InputGroup>
+        {passwordError && <Text color='red.500'>{passwordError}</Text>}
       </FormControl>
 
       <FormControl id='pic'>
